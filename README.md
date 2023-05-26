@@ -68,13 +68,9 @@ const statichtml = "https://github.com/Aiayw/CloudflareWorkerKV-UrlShort/blob/8e
 <img width="1020" alt="绑定kv" src="https://user-images.githubusercontent.com/86509331/199404159-9e3c14e9-22ca-4957-958f-19f9ab0af105.png">
 
 
-### 复制本项目中的[index.js](/index.js)的代码到Cloudflare Worker 
+### 复制本项目中的[index.js](/index.js)的代码到Cloudflare Worker 点击保存并部署
 
-<img width="1020" alt="复制本项目" src="https://github.com/Aiayw/CF-Worker-KV-Short-Url/assets/11790369/3b06aa75-c08e-46b1-987a-74d93a1d6e8c">
-
-
-### 点击保存并部署
-<img width="1020" alt="点击保存并部署" src="https://github.com/Aiayw/CF-Worker-KV-Short-Url/assets/11790369/d7e8be06-ef7d-4a27-bf06-c57ab85b710f">
+<img width="1020" alt="点击保存并部署" src="https://github.com/Aiayw/CloudflareWorkerKV-UrlShort/assets/11790369/8b5e8519-32ae-4504-87a8-18945f9f08e1">
 
 ### 感谢
 感谢[Cloudflare](https://www.cloudflare.com)提供平台和服务。
