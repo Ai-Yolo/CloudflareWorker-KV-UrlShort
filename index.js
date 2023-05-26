@@ -10,7 +10,7 @@ const URL_NAME = "shortCode";
 // 短链接键名（用于 API 返回）
 const SHORT_URL_KEY = "shorturl";
 // 静态首页源码链接 （如果管理员页面不为 / 则生效，不需要也可以直接注释掉）
-// const STATICHTML = "https://github.com/Aiayw/CloudflareWorkerKV-UrlShort/blob/8eb8866c8acfd4ed130dc94f4a2798a78c898ecb/404.html";
+// const STATICHTML = "https://raw.githubusercontent.com/Aiayw/CloudflareWorkerKV-UrlShort/main/404.html";
 
 
 const index = `<!doctype html>
