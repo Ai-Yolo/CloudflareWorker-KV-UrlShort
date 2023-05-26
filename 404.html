@@ -1,43 +1,154 @@
-<!DOCTYPE HTML>
-<html>
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="robots" content="none" />
-		<title>页面不存在</title>
-		<style>
-			* {
-				font-family: "Microsoft Yahei";
-				margin: 0;
-				font-weight: lighter;
-				text-decoration: none;
-				text-align: center;
-				line-height: 2.2em;
-			}
+<!doctype html>
+<html lang="zh-CN">
 
-			html,
-			body {
-				height: 100%;
-			}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.min.js"></script>
+    <script async src="https://umami.aiayw.com/script.js" data-website-id="1b4b644e-8552-452e-8c58-f6efb03ba42b"></script>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔗</text></svg>">
+    <title>简短分享 - 长网址缩短，文本分享，Html单页分享</title>
+</head>
 
-			table {
-				width: 100%;
-				height: 100%;
-				border: 0;
-			}
-		</style>
+<style>
+    .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+    }
 
-	</head>
-	<body>
-		<table cellspacing="0" cellpadding="0">
-			<tr>
-				<td>
-					<p style="font-size: 140px;">404</p>
-					<h2>大事不妙啦！</h2>
-					<p>访问的页面好像不小心给弄丢了~<br />
-					</p>
-				</td>
-			</tr>
-		</table>
-	</body>
+    .btn-secondary,
+    .btn-secondary:hover,
+    .btn-secondary:focus {
+        color: #333;
+        text-shadow: none;
+    }
+
+    body {
+        text-shadow: 0 .05rem .1rem rgba(0, 0, 0, .5);
+    }
+
+    .cover-container {
+        max-width: 42em;
+    }
+
+    .navbar-brand svg {
+        width: 30px;
+        height: 30px;
+    }
+
+    @media (max-width: 576px) {
+        #input-container .form-control,
+        #input-container .input-group-text {
+            display: block;
+            width: 100%;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+        }
+        }
+
+    .footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 60px;
+    }
+
+    .footer .container {
+        width: 100%;
+        height: 100%;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .black-toast .toast {
+        background-color: black;
+      }
+
+    .text-muted {
+        font-size: 14px;
+        color: #555;
+        margin-right: 20px;
+    }
+</style>
+
+<body class="d-flex h-100 text-center text-white bg-dark">
+
+    <div class="position-fixed top-0 end-0 p-3 black-toast" style="z-index: 5;">
+        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body">
+                已复制到剪贴板！
+            </div>
+        </div>
+    </div>
+
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+        <header class="mb-auto">
+            <nav class="navbar navbar-expand-md navbar-dark">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#">
+                        <svg t="1682502812036" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                            xmlns="http://www.w3.org/2000/svg" p-id="1958" width="64" height="64">
+                            <path
+                                d="M429.013333 640A32 32 0 0 1 384 594.986667l37.76-37.76-22.826667-22.613334-135.68 135.68 90.453334 90.453334 135.68-135.68-22.613334-22.613334zM534.613333 398.933333l22.613334 22.613334L594.986667 384A32 32 0 0 1 640 429.013333l-37.76 37.76 22.613333 22.613334 135.68-135.68-90.453333-90.453334z"
+                                fill="#666666" p-id="1959"></path>
+                            <path
+                                d="M512 21.333333a490.666667 490.666667 0 1 0 490.666667 490.666667A490.666667 490.666667 0 0 0 512 21.333333z m316.8 354.986667l-181.12 181.12a32 32 0 0 1-45.226667 0L557.226667 512 512 557.226667l45.226667 45.226666a32 32 0 0 1 0 45.226667l-181.12 181.12a32 32 0 0 1-45.226667 0l-135.68-135.68a32 32 0 0 1 0-45.226667l181.12-181.12a32 32 0 0 1 45.226667 0L466.773333 512 512 466.773333l-45.226667-45.226666a32 32 0 0 1 0-45.226667l181.12-181.12a32 32 0 0 1 45.226667 0l135.68 135.68a32 32 0 0 1 0 45.226667z"
+                                fill="#666666" p-id="1960"></path>
+                        </svg>
+                        简短分享
+                    </a>
+                </div>
+            </nav>
+        </header>
+
+        <main class="px-3">
+            <p id="result" class="lead" onclick="copyToClipboard()"></p>
+
+            <br>
+            <div id="input-container">
+                <div id="link_div" class="input-group mb-3">
+                    <select class="form-control" id="select">
+                        <option value="link">Link</option>
+                        <option value="text">Text</option>
+                        <option value="html">HTML</option>
+                    </select>
+                    <select class="form-control" id="expiration">
+                        <option value="-1">无限制</option>
+                        <option value="burn_after_reading">阅后即焚</option>
+                        <option value="1">1分钟</option>
+                        <option value="10">10分钟</option>
+                        <option value="60">1小时</option>
+                        <option value="1440">1天</option>
+                        <option value="10080">7天</option>
+                        <option value="43200">1个月</option>
+                    </select>
+                    <input type="text" id="name" placeholder="自定义后缀" class="input-group-text">
+                </div>
+            </div>
+            <div id="text_div">
+                <textarea id="link" placeholder="输入链接/文本/HTML源代码 - 当前仅提供预览" class="form-control" rows="10"></textarea><br>
+            </div>
+            <p class="lead">
+                <a href="https://github.com/Aiayw/CloudflareWorkerKV-UrlShort" class="btn btn-lg btn-secondary fw-bold border-white bg-white">前往自行部署</a>
+            </p>
+        </main>
+
+    </div>
+    
+    <footer class="footer">
+        <div class="container">
+	<a href="https://www.cloudflare.com/" class="text-muted">基于Cloudflare-WorkerKV的</a>
+        <a href="https://github.com/Aiayw/CloudflareWorkerKV-UrlShort" class="text-muted">开源项目，请自行部署体验</a>
+        </div>
+    </footer>
+
+</body>
+
 </html>
