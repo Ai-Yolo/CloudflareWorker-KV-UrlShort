@@ -1,6 +1,5 @@
 # CloudflareWorkerKV-UrlShort
-使用Cloudflare Worker创建的URL缩短器｜支持自定义首页｜支持Menu Short｜支持短网址、文本、网页分享
-阅后即焚，过期时间，以及界面UI自适应。
+使用Cloudflare Worker创建的URL缩短器｜支持自定义首页｜支持Menu Short｜支持短网址、文本、网页分享、阅后即焚、过期时间、以及界面UI自适应。
 
 因为[Cloudflare](https://www.cloudflare.com)的免费套餐有限制，所以不提供预览地址，请自行前往[cloudflare Work](https://dash.cloudflare.com)部署。  
 
