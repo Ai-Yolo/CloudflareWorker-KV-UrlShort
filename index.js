@@ -159,7 +159,8 @@ const index = `<!doctype html>
     
     <footer class="footer">
         <div class="container">
-            <a href="https://github.com/Aiayw/CF-Worker-KV-Short-Url" class="text-muted">开源项目，自行部署</a>
+        <a href="https://www.cloudflare.com/" class="text-muted">基于Cloudflare-WorkerKV的</a>
+        <a href="https://github.com/Aiayw/CloudflareWorkerKV-UrlShort" class="text-muted">开源项目，请自行部署体验</a>
         </div>
     </footer>
 
