@@ -20,9 +20,8 @@
 
 ## 常量设置
 ```js
-// 管理员页面路径 （默认为 /admin 如果希望打开就到首页则设置为 /）
-// const ADMIN_PATH = "/";
-const ADMIN_PATH = "/admin";
+// 管理员页面路径 （默认为 / 如果隐藏首页可设置为其他路径，例如：/admin ）
+const ADMIN_PATH = "/";
 // API 路径
 const API_PATH = "/api";
 // 长链接键名
@@ -31,7 +30,7 @@ const URL_KEY = "longUrl";
 const URL_NAME = "shortCode";
 // 短链接键名（用于 API 返回）
 const SHORT_URL_KEY = "shorturl";
-// 静态首页源码链接 （如果管理员页面不为 / 则生效，不需要也可以直接注释掉）
+// 静态首页源码链接 （设置首页替换页面，不需要也可以直接注释掉）
 const STATICHTML = "https://github.com/Aiayw/CloudflareWorkerKV-UrlShort/blob/8eb8866c8acfd4ed130dc94f4a2798a78c898ecb/404.html";
 
 ```
