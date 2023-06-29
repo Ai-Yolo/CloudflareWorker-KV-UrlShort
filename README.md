@@ -63,9 +63,7 @@ Modify the above URL to the source code of your preferred web page. Only a singl
 
 ### Set the variable name as `shortlink` and fill in the KV Namespace with the one you created
 
-<img width="1020
-
-" alt="Bind KV" src="https://user-images.githubusercontent.com/86509331/199404159-9e3c14e9-22ca-4957-958f-19f9ab0af105.png">
+<img width="1020" alt="Bind KV" src="https://user-images.githubusercontent.com/86509331/199404159-9e3c14e9-22ca-4957-958f-19f9ab0af105.png">
 
 ### Copy the code from [index.js](/index.js) in this project and save and deploy it in Cloudflare Worker
 
