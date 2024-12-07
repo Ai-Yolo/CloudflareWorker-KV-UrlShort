@@ -1,370 +1,442 @@
-// 管理员页面路径 （默认为 / 如果隐藏首页可设置为其他路径，例如：/admin ）
-const ADMIN_PATH = "/";
-// API 路径
-const API_PATH = "/api";
-// 长链接键名
-const URL_KEY = "longUrl";
-// 短链接键名
-const URL_NAME = "shortCode";
-// 短链接键名（用于 API 返回）
-const SHORT_URL_KEY = "shorturl";
-// 静态首页源码链接 （设置首页替换页面，不需要也可以直接注释掉）
-// const STATICHTML = "https://raw.githubusercontent.com/Aiayw/CloudflareWorkerKV-UrlShort/main/404.html";
+// Cloudflare Worker
+// This worker uses Cloudflare KV for storing URL data
 
-
-const index = `<!doctype html>
-<html lang="zh-CN">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.min.js"></script>
-    <script async src="https://umami.aiayw.com/script.js" data-website-id="1b4b644e-8552-452e-8c58-f6efb03ba42b"></script>
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔗</text></svg>">
-    <title>简短分享 - 长网址缩短，文本分享，Html单页分享</title>
-</head>
-
-<style>
-    .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
-    }
-
-    .btn-secondary,
-    .btn-secondary:hover,
-    .btn-secondary:focus {
-        color: #333;
-        text-shadow: none;
-    }
-
-    body {
-        text-shadow: 0 .05rem .1rem rgba(0, 0, 0, .5);
-    }
-
-    .cover-container {
-        max-width: 42em;
-    }
-
-    .navbar-brand svg {
-        width: 30px;
-        height: 30px;
-    }
-
-    @media (max-width: 576px) {
-        #input-container .form-control,
-        #input-container .input-group-text {
-            display: block;
-            width: 100%;
-            margin-bottom: 1rem;
-            border-radius: 5px;
-        }
-        }
-
-    .footer {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        height: 60px;
-    }
-
-    .footer .container {
-        width: 100%;
-        height: 100%;
-        padding: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .black-toast .toast {
-        background-color: black;
-      }
-
-    .text-muted {
-        font-size: 14px;
-        color: #555;
-        margin-right: 20px;
-    }
-</style>
-
-<body class="d-flex h-100 text-center text-white bg-dark">
-
-    <div class="position-fixed top-0 end-0 p-3 black-toast" style="z-index: 5;">
-        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-body">
-                已复制到剪贴板！
-            </div>
-        </div>
-    </div>
-
-    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-        <header class="mb-auto">
-            <nav class="navbar navbar-expand-md navbar-dark">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="#">
-                        <svg t="1682502812036" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                            xmlns="http://www.w3.org/2000/svg" p-id="1958" width="64" height="64">
-                            <path
-                                d="M429.013333 640A32 32 0 0 1 384 594.986667l37.76-37.76-22.826667-22.613334-135.68 135.68 90.453334 90.453334 135.68-135.68-22.613334-22.613334zM534.613333 398.933333l22.613334 22.613334L594.986667 384A32 32 0 0 1 640 429.013333l-37.76 37.76 22.613333 22.613334 135.68-135.68-90.453333-90.453334z"
-                                fill="#666666" p-id="1959"></path>
-                            <path
-                                d="M512 21.333333a490.666667 490.666667 0 1 0 490.666667 490.666667A490.666667 490.666667 0 0 0 512 21.333333z m316.8 354.986667l-181.12 181.12a32 32 0 0 1-45.226667 0L557.226667 512 512 557.226667l45.226667 45.226666a32 32 0 0 1 0 45.226667l-181.12 181.12a32 32 0 0 1-45.226667 0l-135.68-135.68a32 32 0 0 1 0-45.226667l181.12-181.12a32 32 0 0 1 45.226667 0L466.773333 512 512 466.773333l-45.226667-45.226666a32 32 0 0 1 0-45.226667l181.12-181.12a32 32 0 0 1 45.226667 0l135.68 135.68a32 32 0 0 1 0 45.226667z"
-                                fill="#666666" p-id="1960"></path>
-                        </svg>
-                        简短分享
-                    </a>
-                </div>
-            </nav>
-        </header>
-
-        <main class="px-3">
-            <p id="result" class="lead" onclick="copyToClipboard()"></p>
-
-            <br>
-            <div id="input-container">
-                <div id="link_div" class="input-group mb-3">
-                    <select class="form-control" id="select">
-                        <option value="link">Link</option>
-                        <option value="text">Text</option>
-                        <option value="html">HTML</option>
-                    </select>
-                    <select class="form-control" id="expiration">
-                        <option value="-1">无限制</option>
-                        <option value="burn_after_reading">阅后即焚</option>
-                        <option value="1">1分钟</option>
-                        <option value="10">10分钟</option>
-                        <option value="60">1小时</option>
-                        <option value="1440">1天</option>
-                        <option value="10080">7天</option>
-                        <option value="43200">1个月</option>
-                    </select>
-                    <input type="text" id="name" placeholder="自定义后缀" class="input-group-text">
-                </div>
-            </div>
-            <div id="text_div">
-                <textarea id="link" placeholder="输入链接/文本/HTML源代码" class="form-control" rows="10"></textarea><br>
-            </div>
-            <p class="lead">
-                <a href="#" onclick="getlink()" class="btn btn-lg btn-secondary fw-bold border-white bg-white">生成</a>
-            </p>
-        </main>
-
-    </div>
-    
-    <footer class="footer">
-        <div class="container">
-        <a href="https://www.cloudflare.com/" class="text-muted">基于Cloudflare-WorkerKV的</a>
-        <a href="https://github.com/Aiayw/CloudflareWorkerKV-UrlShort" class="text-muted">开源项目，请自行部署体验</a>
-        </div>
-    </footer>
-
-    <script>
-        async function postData(url = '', data = {}) {
-            const response = await fetch(url, {
-                method: 'POST',
-                mode: 'cors',
-                cache: 'no-cache',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                redirect: 'follow',
-                referrerPolicy: 'no-referrer',
-                body: JSON.stringify(data)
-            });
-            return response.json();
-        }
-
-        function isValidUrl(string) {
-            try {
-            new URL(string);
-            return true;
-            } catch (_) {
-            return false;
-            }
-        }
-      
-        function copyToClipboard() {
-            const textToCopy = document.getElementById('result').innerText;
-            if (textToCopy) {
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    const toast = new bootstrap.Toast(document.getElementById('toast'));
-                    toast.show();
-                }).catch(err => {
-                    console.error('无法复制文本: ', err);
-                });
-            } else {
-                alert('没有文本可复制');
-            }
-        }
-        
-        function getlink() {
-            let link = document.getElementById('link').value.trim()
-            const name = document.getElementById('name').value
-            const type = document.getElementById('select').value
-            if (link === '') {
-                document.getElementById('result').innerHTML = "请输入链接/文本/HTML源代码"
-                return;
-            }
-            if (link.indexOf('http') == -1 && type == "link") {
-                link = 'http://' + link
-            }
-            if (type == "link" && !isValidUrl(link)) {
-                document.getElementById('result').innerHTML = "请输入有效的URL格式"
-                return;
-            }
-            document.getElementById('result').innerHTML = "生成中.."
-            const expirationElement = document.getElementById('expiration');
-            const selectedIndex = expirationElement.selectedIndex;
-            const expiration = expirationElement.options[selectedIndex].value;
-            const burnAfterReading = expiration === 'burn_after_reading';
-            postData("${API_PATH}", {
-                "${URL_KEY}": link,
-                "${URL_NAME}": name,
-                "type": type,
-                "expiration": burnAfterReading ? -1 : expiration,
-                "burn_after_reading": burnAfterReading
-              }).then(resp => {
-                if (resp.error) {
-                  document.getElementById('result').innerHTML = resp.error;
-                  document.getElementById('name').value = ''
-                } else if (resp.value) {
-                  document.getElementById('result').innerHTML = resp.value;
-                } else {
-                  var url = document.location.protocol + '//' + document.location.host + '/' + resp['${URL_NAME}']
-                  document.getElementById('result').innerHTML = url
-                  document.getElementById('link').value = ''
-                  document.getElementById('name').value = ''
-                  document.getElementById('select').selectedIndex = 0
-                }
-              });
-              
-        }
-
-    </script>
-
-</body>
-
-</html>`;
+// KV Namespace binding
+// const URL_SHORT_KV = "URL_SHORT_KV"; // Bind this in Cloudflare Worker settings
 
 addEventListener("fetch", (event) => {
   event.respondWith(handleRequest(event.request));
 });
 
-/**
- * Respond with hello worker text
- * @param {Request} request
- */
-
 async function handleRequest(request) {
-  const { protocol, hostname, pathname } = new URL(request.url);
-  // index.html
-  if (pathname == ADMIN_PATH) {
-    return new Response(index, {
-      headers: { "content-type": "text/html; charset=utf-8" },
-    });
+  try {
+    const url = new URL(request.url);
+    const { pathname } = url;
+
+    // Handle favicon request
+    if (pathname === '/favicon.ico') {
+      return new Response(null, { status: 204 });
+    }
+
+    if (pathname === "/") {
+      // Serve the frontend
+      return serveFrontend();
+    }
+
+    if (pathname.startsWith("/api")) {
+      // Handle API requests
+      return handleAPIRequest(request);
+    }
+
+    // Redirect for short URLs
+    return handleRedirect(pathname);
+  } catch (error) {
+    console.error('Error handling request:', error);
+    return new Response('服务器内部错误', { status: 500 });
   }
-  // short api
-if (pathname.startsWith(API_PATH)) {
-    const body = JSON.parse(await request.text());
-    console.log(body);
-    var short_type = "link";
-    if (body["type"] != undefined && body["type"] != "") {
-      short_type = body["type"];
-    }
-    if (
-      body[URL_NAME] == undefined ||
-      body[URL_NAME] == "" ||
-      body[URL_NAME].length < 2
-    ) {
-      body[URL_NAME] = Math.random().toString(36).slice(-6);
-    }
-    
-    // 检查自定义后缀是否已经存在
-    if (await shortlink.get(body[URL_NAME])) {
-      return new Response(
-        JSON.stringify({ error: "该后缀已经被使用，请使用其他后缀。" }),
-        {
-          headers: { "Content-Type": "application/json; charset=utf-8" },
+}
+
+async function serveFrontend() {
+  const frontendHTML = `<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>短链接生成器</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔗</text></svg>">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <main class="container mx-auto p-6 max-w-2xl">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">短链接生成器</h1>
+            <p class="text-gray-600">快速生成安全可靠的短链接</p>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-lg p-8 backdrop-blur-sm bg-opacity-90">
+            <form id="shorten-form" class="space-y-6">
+                <div class="space-y-4">
+                    <div>
+                        <label for="url" class="block text-sm font-semibold text-gray-700 mb-2">
+                            输入链接
+                            <span class="text-gray-500 font-normal">（必填）</span>
+                        </label>
+                        <input id="url" type="url" 
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" 
+                            placeholder="https://example.com" required>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="slug" class="block text-sm font-semibold text-gray-700 mb-2">
+                                自定义短链接
+                                <span class="text-gray-500 font-normal">（可选）</span>
+                            </label>
+                            <input id="slug" type="text" 
+                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" 
+                                placeholder="自定义链接">
+                        </div>
+                        <div>
+                            <label for="expiry" class="block text-sm font-semibold text-gray-700 mb-2">
+                                有效期
+                                <span class="text-gray-500 font-normal">（可选）</span>
+                            </label>
+                            <input id="expiry" type="datetime-local" 
+                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                placeholder="选择到期时间">
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
+                                访问密码
+                                <span class="text-gray-500 font-normal">（可选）</span>
+                            </label>
+                            <input id="password" type="password" 
+                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" 
+                                placeholder="设置密码">
+                        </div>
+                        <div>
+                            <label for="maxVisits" class="block text-sm font-semibold text-gray-700 mb-2">
+                                最大访问次数
+                                <span class="text-gray-500 font-normal">（可选）</span>
+                            </label>
+                            <input id="maxVisits" type="number" 
+                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" 
+                                placeholder="10">
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" 
+                    class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-3 px-6 rounded-lg font-medium hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:-translate-y-0.5 transition duration-200">
+                    生成短链接
+                </button>
+            </form>
+            
+            <div id="result" class="mt-8"></div>
+        </div>
+    </main>
+
+    <script>
+    document.getElementById('shorten-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitButton = e.target.querySelector('button[type="submit"]');
+      const resultDiv = document.getElementById('result');
+      
+      // 禁用提交按钮并显示加载状态
+      submitButton.disabled = true;
+      submitButton.textContent = '生成中...';
+      resultDiv.innerHTML = '';
+      
+      try {
+        const formData = {
+          url: document.getElementById('url').value,
+          slug: document.getElementById('slug').value,
+          expiry: document.getElementById('expiry').value,
+          password: document.getElementById('password').value,
+          maxVisits: document.getElementById('maxVisits').value
+        };
+        
+        const response = await fetch('/api/shorten', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          resultDiv.innerHTML = \`
+            <div class="p-4 bg-green-50 rounded-lg">
+              <p class="text-green-800 font-medium mb-2">短链接生成成功！</p>
+              <div class="flex items-center gap-2">
+                <input type="text" value="\${data.shortened}" readonly
+                  class="flex-1 p-2 border border-gray-300 rounded bg-white">
+                <button onclick="navigator.clipboard.writeText('\${data.shortened}')"
+                  class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                  复制
+                </button>
+              </div>
+            </div>
+          \`;
+        } else {
+          resultDiv.innerHTML = \`
+            <div class="p-4 bg-red-50 rounded-lg">
+              <p class="text-red-800">\${data.error}</p>
+            </div>
+          \`;
         }
-      );
-    }
-    
-    const expiration = parseInt(body["expiration"]);
-    let expiresAt = null;
-    await shortlink.put(
-      body[URL_NAME],
-      JSON.stringify({
-        type: short_type,
-        value: body[URL_KEY],
-        expiresAt: expiresAt ? expiresAt.toISOString() : null,
-        burn_after_reading: body["burn_after_reading"], 
-      })
-    );
-     // Remove other fields from the response body
-    const responseBody = {
-      type: body.type,
-      shorturl: `${protocol}//${hostname}/${body[URL_NAME]}`,
-      shortCode: body[URL_NAME],
-    };
-    
-    // Add Access-Control-Allow-Origin header to the response
-    return new Response(JSON.stringify(responseBody), {
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        "Access-Control-Allow-Origin": "*",
-      },
+      } catch (error) {
+        resultDiv.innerHTML = \`
+          <div class="p-4 bg-red-50 rounded-lg">
+            <p class="text-red-800">生成短链接时发生错误，请重试</p>
+          </div>
+        \`;
+      }
+      
+      // 恢复提交按钮状态
+      submitButton.disabled = false;
+      submitButton.textContent = '生成短链接';
     });
-  }
-  
-  const key = pathname.replace("/", "");
-  if (key !== "" && !(await shortlink.get(key))) {
-    return Response.redirect(`${protocol}//${hostname}${ADMIN_PATH}`, 302);
-  }
-  if (key == "") {
-    const html = await fetch(STATICHTML);
-    return new Response(await html.text(), {
-      headers: {
-        "content-type": "text/html;charset=UTF-8",
-      },
-    });
-  }
-  let link = await shortlink.get(key);
-  if (link != null) {
-    link = JSON.parse(link);
-    console.log(link);
-    const expiresAt = link["expiresAt"] ? new Date(link["expiresAt"]) : null;
-    const now = new Date();
-    if (expiresAt && now >= expiresAt) {
-      return new Response(`链接已过期`, {
-        headers: { "content-type": "text/plain; charset=utf-8" },
-      });
-    }
-    // 删除阅后即焚的链接
-    if (link["burn_after_reading"]) {
-      await shortlink.delete(key);
-    }
-    // redirect
-    if (link["type"] == "link") {
-      return Response.redirect(link["value"], 302);
-    }
-    if (link["type"] == "html") {
-      return new Response(link["value"], {
-        headers: { "content-type": "text/html; charset=utf-8" },
-      });
-    } else {
-      // textarea
-      return new Response(`${link["value"]}`, {
-        headers: { "content-type": "text/plain; charset=utf-8" },
-      });
-    }
-  }
-  return new Response(`403`, {
-    headers: { "content-type": "text/plain; charset=utf-8" },
+    </script>
+</body>
+</html>`;
+
+  return new Response(frontendHTML, {
+    headers: { 
+      "Content-Type": "text/html",
+      "Cache-Control": "no-cache, no-store, must-revalidate"
+    },
   });
+}
+
+async function handleAPIRequest(request) {
+  try {
+    const { pathname } = new URL(request.url);
+
+    if (pathname === "/api/shorten") {
+      if (request.method !== "POST") {
+        return new Response(JSON.stringify({ error: "请求方法不允许" }), { 
+          status: 405,
+          headers: { 
+            "Content-Type": "application/json",
+            "Allow": "POST"
+          }
+        });
+      }
+
+      const { url, slug, expiry, password, maxVisits } = await request.json();
+      if (!url) {
+        return new Response(JSON.stringify({ error: "请输入链接地址" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      // Validate URL
+      try {
+        new URL(url);
+      } catch {
+        return new Response(JSON.stringify({ error: "链接格式无效" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      const shortSlug = slug || generateSlug();
+      
+      // Validate slug format
+      if (!/^[a-zA-Z0-9-_]+$/.test(shortSlug)) {
+        return new Response(JSON.stringify({ error: "自定义链接格式无效，只能使用字母、数字、横线和下划线" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      const existing = await URL_SHORT_KV.get(shortSlug);
+      if (existing) {
+        return new Response(JSON.stringify({ error: "该自定义链接已被使用" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      const expiryTimestamp = expiry ? new Date(expiry).getTime() : null;
+      await URL_SHORT_KV.put(shortSlug, JSON.stringify({ 
+        url, 
+        expiry: expiryTimestamp, 
+        password,
+        created: Date.now(),
+        maxVisits: maxVisits ? parseInt(maxVisits) : null,
+        visits: 0
+      }));
+
+      const shortURL = new URL(request.url);
+      shortURL.pathname = `/${shortSlug}`;
+      return new Response(JSON.stringify({ shortened: shortURL.toString() }), {
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (pathname.startsWith('/api/verify/')) {
+      if (request.method !== "POST") {
+        return new Response(JSON.stringify({ error: "请求方法不允许" }), { 
+          status: 405,
+          headers: { 
+            "Content-Type": "application/json",
+            "Allow": "POST"
+          }
+        });
+      }
+
+      const slug = pathname.replace('/api/verify/', '');
+      const record = await URL_SHORT_KV.get(slug);
+      
+      if (!record) {
+        return new Response(JSON.stringify({ error: "链接不存在" }), {
+          status: 404,
+          headers: { "Content-Type": "application/json" }
+        });
+      }
+
+      const { password: correctPassword, url } = JSON.parse(record);
+      const { password: inputPassword } = await request.json();
+
+      if (inputPassword === correctPassword) {
+        return new Response(JSON.stringify({ 
+          success: true,
+          url: url
+        }), {
+          headers: { "Content-Type": "application/json" }
+        });
+      } else {
+        return new Response(JSON.stringify({ 
+          success: false,
+          error: "密码错误"
+        }), {
+          headers: { "Content-Type": "application/json" }
+        });
+      }
+    }
+
+    return new Response(JSON.stringify({ error: "页面不存在" }), { 
+      status: 404,
+      headers: { "Content-Type": "application/json" }
+    });
+  } catch (error) {
+    console.error('API Error:', error);
+    return new Response(JSON.stringify({ error: "服务器内部错误" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
+async function handleRedirect(pathname) {
+  try {
+    const slug = pathname.slice(1);
+    const record = await URL_SHORT_KV.get(slug);
+
+    if (!record) {
+      return new Response("链接不存在", { 
+        status: 404,
+        headers: { "Content-Type": "text/plain; charset=utf-8" }
+      });
+    }
+
+    const data = JSON.parse(record);
+    const { url, expiry, password, maxVisits, visits = 0 } = data;
+
+    if (expiry && Date.now() > expiry) {
+      await URL_SHORT_KV.delete(slug);
+      return new Response("链接已过期", { 
+        status: 410,
+        headers: { "Content-Type": "text/plain; charset=utf-8" }
+      });
+    }
+
+    if (maxVisits && visits >= maxVisits) {
+      await URL_SHORT_KV.delete(slug);
+      return new Response("链接访问次数已达上限", { 
+        status: 410,
+        headers: { "Content-Type": "text/plain; charset=utf-8" }
+      });
+    }
+
+    // Update visit count
+    if (maxVisits) {
+      data.visits = visits + 1;
+      await URL_SHORT_KV.put(slug, JSON.stringify(data));
+    }
+
+    if (password) {
+      const frontendHTML =`<!DOCTYPE html>
+      <html lang="zh">
+      <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>密码保护链接</title>
+      <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+      <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>">
+      </head>
+      <body class="bg-gray-100">
+        <main class="container mx-auto p-4 max-w-md min-h-screen flex items-center justify-center">
+          <div class="bg-white rounded-lg shadow-md p-6 w-full">
+            <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">密码保护链接</h1>
+            <form id="password-form" class="space-y-4">
+              <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">请输入访问码：</label>
+                <input id="password" type="password" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+              </div>
+              <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                访问链接
+              </button>
+            </form>
+            <div id="error" class="mt-4 text-red-500 text-center"></div>
+          </div>
+        </main>
+        <script>
+          document.getElementById('password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            const inputPassword = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error');
+            
+            submitButton.disabled = true;
+            submitButton.textContent = '验证中...';
+            errorDiv.textContent = '';
+            
+            try {
+              const response = await fetch('/api/verify/${slug}', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ password: inputPassword })
+              });
+              
+              const data = await response.json();
+              
+              if (data.success) {
+                window.location.href = data.url;
+              } else {
+                errorDiv.textContent = "密码错误";
+              }
+            } catch (error) {
+              errorDiv.textContent = "发生错误，请重试";
+            } finally {
+              submitButton.disabled = false;
+              submitButton.textContent = '访问链接';
+            }
+          });
+        </script>
+      </body>
+      </html>`;
+
+      return new Response(frontendHTML, {
+        headers: { 
+          "Content-Type": "text/html",
+          "Cache-Control": "no-cache, no-store, must-revalidate"
+        },
+      });
+    }
+
+    return Response.redirect(url, 302);
+  } catch (error) {
+    console.error('Redirect Error:', error);
+    return new Response("服务器内部错误", { 
+      status: 500,
+      headers: { "Content-Type": "text/plain; charset=utf-8" }
+    });
+  }
+}
+
+function generateSlug(length = 6) {
+  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
 }
